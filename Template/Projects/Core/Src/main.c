@@ -181,7 +181,8 @@ int main(void)
       printf( "LSM6DS3 updated\r\n" );
     }
     lsm6ds3_read_accelerometer(&data);
-    printf("Accelerometer:\n x: %d\n y: %d\n z: %d\r\n", data->x, data->y, data->z);
+    //printf("Accelerometer:\n x: %G\n y: %G\n z: %G\r\n", data->x, data->y, data->z);
+    printf("%G\t%G\t%G\r\n", data->x, data->y, data->z);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

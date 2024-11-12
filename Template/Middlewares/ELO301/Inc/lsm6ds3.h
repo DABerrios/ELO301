@@ -51,6 +51,11 @@ extern "C" {
 #define LSM6DS3_WHO_AM_I    0x0F
 #define LSM6DS3_CTRL1_XL    0x10
 #define LSM6DS3_STATUS_REG	0x1E
+#define LSM6DS3_X_OFS_USR	0x73
+#define LSM6DS3_Y_OFS_USR	0x74
+#define LSM6DS3_Z_OFS_USR	0x75
+#define LSM6DS3_CTRL7_G		0x16
+
 
 #define LSM6DS3_OUTX_L_XL	0x28
 #define LSM6DS3_OUTX_H_XL	0x29

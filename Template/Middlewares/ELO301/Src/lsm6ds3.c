@@ -80,13 +80,48 @@ void lsm6ds3_accelerometer_mode(void) {
 	    Error_Handler();
 	    return;
 	  }
+	return;
 }
+void lsm6ds3_accelerometer_offset(void){
+	HAL_StatusTypeDef status;
+	uint8_t USR_OFF_ON_OUT = 0x02;
+	uint8_t offsetxl = 0x00;
+	status= HAL_I2C_Mem_Write(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_CTRL7_G, 1, &USR_OFF_ON_OUT, 1, TIMEOUT_100MS);
+	if (status != HAL_OK) {
+		/* I2C error */
+		Error_Handler();
+		return;
+	}
+	status = HAL_I2C_Mem_Write(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_X_OFS_USR, 1,
+			&offsetxl, 1, TIMEOUT_100MS);
+	if (status != HAL_OK) {
+		/* I2C error */
+		Error_Handler();
+		return;
+	}
+	status = HAL_I2C_Mem_Write(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_Y_OFS_USR, 1,
+			&offsetxl, 1, TIMEOUT_100MS);
+	if (status != HAL_OK) {
+		/* I2C error */
+		Error_Handler();
+		return;
+	}
+	status = HAL_I2C_Mem_Write(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_Z_OFS_USR, 1,
+			&offsetxl, 1, TIMEOUT_100MS);
+	if (status != HAL_OK) {
+		/* I2C error */
+		Error_Handler();
+		return;
+	}
+	return;
+}
+
 void lsm6ds3_read_accelerometer(accel_data **data) {
 	HAL_StatusTypeDef status;
 	uint8_t xldata;
-	uint16_t xacceleration;
-	uint16_t yacceleration;
-	uint16_t zacceleration;
+	int16_t xacceleration;
+	int16_t yacceleration;
+	int16_t zacceleration;
 	uint8_t xacceleration2;
 	uint8_t yacceleration2;
 	uint8_t zacceleration2;
@@ -144,9 +179,9 @@ void lsm6ds3_read_accelerometer(accel_data **data) {
 			return;
 		}
 		zacceleration = zacceleration | zacceleration2;
-		(*data)->x = xacceleration * 0.244;
-		(*data)->y = yacceleration * 0.244;
-		(*data)->z = zacceleration * 0.244;
+		(*data)->x = xacceleration * 0.244/1000;
+		(*data)->y = yacceleration * 0.244/1000;
+		(*data)->z = zacceleration * 0.244/1000;
 	    return;
 	}
 }
