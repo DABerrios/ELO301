@@ -62,7 +62,7 @@ void lsm6ds3_init(void)
   HAL_StatusTypeDef status;
 
   /* Test I2C interface by reading known value (WHO AM I) using HAL interface */
-  status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR << 1, LSM6DS3_WHO_AM_I, 1, &who_am_i, 1, TIMEOUT_100MS);
+  status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_WHO_AM_I, 1, &who_am_i, 1, TIMEOUT_100MS);
   if (status != HAL_OK)
   {
     /* I2C error */
@@ -70,7 +70,85 @@ void lsm6ds3_init(void)
     return;
   }
 }
-
+void lsm6ds3_accelerometer_mode(void) {
+	HAL_StatusTypeDef status;
+	uint8_t ctrl1xl=0x4C;//accelerometer normal mode 104 Hz +-8g
+	status = HAL_I2C_Mem_Write(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_CTRL1_XL, 1, &ctrl1xl, 1,TIMEOUT_100MS);
+	if (status != HAL_OK)
+	  {
+	    /* I2C error */
+	    Error_Handler();
+	    return;
+	  }
+}
+void lsm6ds3_read_accelerometer(accel_data **data) {
+	HAL_StatusTypeDef status;
+	uint8_t xldata;
+	uint16_t xacceleration;
+	uint16_t yacceleration;
+	uint16_t zacceleration;
+	uint8_t xacceleration2;
+	uint8_t yacceleration2;
+	uint8_t zacceleration2;
+	status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_STATUS_REG, 1, &xldata, 1, TIMEOUT_100MS);
+	if (status != HAL_OK) {
+		/* I2C error */
+		Error_Handler();
+		return;
+	}
+	xldata = xldata & 0x01;
+	if (xldata == 0) {
+		return;
+	}
+	else {
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTX_H_XL, 1, &xacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		xacceleration = xacceleration2 << 8;
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTX_L_XL, 1, &xacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		xacceleration = xacceleration | xacceleration2;
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTY_H_XL, 1, &yacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		yacceleration = yacceleration2 << 8;
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTY_L_XL, 1, &yacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		yacceleration = yacceleration | yacceleration2;
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTZ_H_XL, 1, &zacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		zacceleration = zacceleration2 << 8;
+		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTZ_L_XL, 1, &zacceleration2, 1, TIMEOUT_100MS);
+		if (status != HAL_OK) {
+			/* I2C error */
+			Error_Handler();
+			return;
+		}
+		zacceleration = zacceleration | zacceleration2;
+		(*data)->x = xacceleration * 0.244;
+		(*data)->y = yacceleration * 0.244;
+		(*data)->z = zacceleration * 0.244;
+	    return;
+	}
+}
 /*
  * API: pwm_open
  */

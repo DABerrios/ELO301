@@ -75,7 +75,11 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+typedef struct {
+	float x;
+	float y;
+	float z;
+}accel_data;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

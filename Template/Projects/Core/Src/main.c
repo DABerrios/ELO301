@@ -78,6 +78,7 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 #if GPIO_LD2_ENABLED
   t_gpio_pin user_led_pin = {LD4_GPIO_Port, LD4_Pin};
@@ -152,6 +153,11 @@ int main(void)
 
   /* Welcome message */
   printf("ELO301 Demo Init\r\n");
+  lsm6ds3_accelerometer_mode();
+  accel_data acceldata;
+  accel_data* data=&acceldata;
+  lsm6ds3_read_accelerometer(&data);
+
 
   while (1)
   {
@@ -167,15 +173,15 @@ int main(void)
     HAL_Delay(DELAY_MS);
 
     /* Print message */
-    printf("Button: %u\r\n", gpio_if_get(&user_button));
+    //printf("Button: %u\r\n", gpio_if_get(&user_button));
 
     /* Read LSM6DS3 driver */
     if (lsm6ds3_update())
     {
       printf( "LSM6DS3 updated\r\n" );
     }
-
-
+    lsm6ds3_read_accelerometer(&data);
+    printf("Accelerometer:\n x: %d\n y: %d\n z: %d\r\n", data->x, data->y, data->z);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -204,7 +210,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSICalibrationValue = 64;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;

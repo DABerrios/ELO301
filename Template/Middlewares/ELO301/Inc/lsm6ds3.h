@@ -43,9 +43,21 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+
 /*- USER_Definitions ------------------------------------------------------*/
-#define LSM6DS3_I2C_ADDR    0x6A
+#include "main.h"
+
+#define LSM6DS3_I2C_ADDR    0x6B<<1
 #define LSM6DS3_WHO_AM_I    0x0F
+#define LSM6DS3_CTRL1_XL    0x10
+#define LSM6DS3_STATUS_REG	0x1E
+
+#define LSM6DS3_OUTX_L_XL	0x28
+#define LSM6DS3_OUTX_H_XL	0x29
+#define LSM6DS3_OUTY_L_XL	0x2A
+#define LSM6DS3_OUTY_H_XL	0x2B
+#define LSM6DS3_OUTZ_L_XL	0x2C
+#define LSM6DS3_OUTZ_H_XL	0x2D
 /*- PRIVATE_Definitions ------------------------------------------------------*/
 
 
@@ -65,6 +77,8 @@ void lsm6ds3_init(void);
 bool lsm6ds3_open(void);
 
 bool lsm6ds3_update(void);
+void lsm6ds3_read_accelerometer(accel_data **data);
+void lsm6ds3_accelerometer_mode(void);
 
 #ifdef __cplusplus
 }
