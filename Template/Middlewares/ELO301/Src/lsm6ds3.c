@@ -107,6 +107,7 @@ void lsm6ds3_read_accelerometer(accel_data **data) {
 			Error_Handler();
 			return;
 		}
+
 		xacceleration = xacceleration2 << 8;
 		status = HAL_I2C_Mem_Read(&hi2c1, LSM6DS3_I2C_ADDR, LSM6DS3_OUTX_L_XL, 1, &xacceleration2, 1, TIMEOUT_100MS);
 		if (status != HAL_OK) {
