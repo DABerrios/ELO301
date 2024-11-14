@@ -88,6 +88,7 @@ int main(void)
   t_gpio_if user_button;
   t_adc_if potentiometer;
   t_pwm pwm;
+  t_pwm pwm2;
   uint8_t adc_rate;
 
   /* USER CODE END 1 */
@@ -149,6 +150,12 @@ int main(void)
     Error_Handler();
   }
 
+  pwm_init(&pwm2, &htim2, TIM_CHANNEL_2, COUNTER_PERIOD_VALUE);
+	if (pwm_open(&pwm2) != PWM_SUCCESS)
+	{
+	  Error_Handler();
+	}
+
   lsm6ds3_init();
 
   /* Welcome message */
@@ -169,7 +176,13 @@ int main(void)
     {
       Error_Handler();
     }
-    pwm_update(&pwm, adc_rate);
+    pwm_update(&pwm, 50);
+    pwm_update(&pwm2, 0);
+
+    // Turn IN1_motor on
+    HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);
+    
     HAL_Delay(DELAY_MS);
 
     /* Print message */
