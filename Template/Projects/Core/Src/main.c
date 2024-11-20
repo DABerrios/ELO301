@@ -87,8 +87,8 @@ int main(void)
   t_gpio_pin user_button_pin = {B1_GPIO_Port, B1_Pin};
   t_gpio_if user_button;
   t_adc_if potentiometer;
-  t_pwm pwm;
-  t_pwm pwm2;
+  t_pwm PWM1;
+  t_pwm PWM2;
   uint8_t adc_rate;
 
   /* USER CODE END 1 */
@@ -115,6 +115,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_I2C1_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -144,17 +145,18 @@ int main(void)
   }
 
   /* Init PWM */
-  pwm_init(&pwm, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
-  if (pwm_open(&pwm) != PWM_SUCCESS)
+  pwm_init(&PWM1, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
+  if (pwm_open(&PWM1) != PWM_SUCCESS)
   {
     Error_Handler();
   }
 
-  pwm_init(&pwm2, &htim2, TIM_CHANNEL_2, COUNTER_PERIOD_VALUE);
-	if (pwm_open(&pwm2) != PWM_SUCCESS)
+  pwm_init(&PWM2, &htim2, TIM_CHANNEL_2, COUNTER_PERIOD_VALUE);
+	if (pwm_open(&PWM2) != PWM_SUCCESS)
 	{
 	  Error_Handler();
 	}
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
 
   lsm6ds3_init();
 
@@ -176,8 +178,8 @@ int main(void)
     {
       Error_Handler();
     }
-    pwm_update(&pwm, 50);
-    pwm_update(&pwm2, 0);
+    pwm_update(&PWM1, 25);
+    pwm_update(&PWM2, 0);
 
     // Turn IN1_motor on
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
