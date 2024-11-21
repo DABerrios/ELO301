@@ -45,7 +45,7 @@ extern "C" {
 #include "tim.h"
 
 /*- PRIVATE_Definitions ------------------------------------------------------*/
-#define ENCODER_PULSE_PER_REVOLUTION 28
+#define ENCODER_PULSES_PER_REVOLUTION 28
 
 /*- PRIVATE_Types ------------------------------------------------------------*/
 typedef struct {
@@ -65,6 +65,8 @@ void encoder_init(t_encoder *encoder, TIM_HandleTypeDef *tim, uint32_t channel, 
 t_encoder_status encoder_open(t_encoder *encoder);
 t_encoder_status encoder_read(t_encoder *encoder, uint32_t *value, uint32_t *direction);
 float encoder_to_degrees(uint32_t value);
+t_encoder_status encoder_start(t_encoder *encoder);
+float lsm6ds3_g_to_degrees(float g);
 
 
 

@@ -4,7 +4,7 @@
  *  Created on: Nov 20, 2024
  *      Author: daisy
  */
-
+typedef double real_t;
 
 typedef struct
 {

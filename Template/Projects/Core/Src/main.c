@@ -34,6 +34,7 @@
 #include "adc_if.h"
 #include "pwm.h"
 #include "lsm6ds3.h"
+#include "encoder.h"
 
 /* USER CODE END Includes */
 
@@ -157,13 +158,14 @@ int main(void)
 	{
 	  Error_Handler();
 	}
-  encoder_init(&encoder, &htim1, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
+  encoder_init(&encoder, &htim1, TIM_CHANNEL_ALL, COUNTER_PERIOD_VALUE);
   if (encoder_open(&encoder) != ENCODER_SUCCESS) {
     Error_Handler();
   }
+
   motor_data motordata;
   motor_data* motor=&motordata;
-
+  encoder_start(&encoder);
   encoder_read(&encoder, &motor->position, &motor->direction);
   printf("Encoder position: %lu\r\n", motor->position);
   printf("Encoder direction: %lu\r\n", motor->direction);
@@ -189,8 +191,11 @@ int main(void)
     {
       Error_Handler();
     }
-    pwm_update(&PWM1, 25);
-    pwm_update(&PWM2, 0);
+    pwm_update(&PWM1, 0);
+    pwm_update(&PWM2, 20);
+
+    encoder_read(&encoder, &motor->position, &motor->direction);
+    encoder_to_degrees(motor->position);
 
     // Turn IN1_motor on
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);

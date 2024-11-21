@@ -38,6 +38,7 @@
 #include "lsm6ds3.h"
 #include "main.h"
 #include "i2c.h"
+#include "math.h"
 
 /*- PRIVATE_TUNABLES ---------------------------------------------------------*/
 
@@ -184,6 +185,10 @@ void lsm6ds3_read_accelerometer(accel_data **data) {
 		(*data)->z = zacceleration * 0.244/1000;
 	    return;
 	}
+}
+float lsm6ds3_g_to_degrees(float g) {
+	float degrees = asin(g) * 180 / 3.14159265359;
+	return degrees;
 }
 /*
  * API: pwm_open
