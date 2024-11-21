@@ -86,6 +86,11 @@ typedef struct {
 	float y;
 	float z;
 }accel_data;
+
+typedef struct {
+  uint32_t position;
+  uint32_t direction;
+  } motor_data;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

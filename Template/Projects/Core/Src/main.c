@@ -90,6 +90,7 @@ int main(void)
   t_pwm PWM1;
   t_pwm PWM2;
   uint8_t adc_rate;
+  t_encoder encoder;
 
   /* USER CODE END 1 */
 
@@ -156,8 +157,18 @@ int main(void)
 	{
 	  Error_Handler();
 	}
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
+  encoder_init(&encoder, &htim1, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
+  if (encoder_open(&encoder) != ENCODER_SUCCESS) {
+    Error_Handler();
+  }
+  motor_data motordata;
+  motor_data* motor=&motordata;
 
+  encoder_read(&encoder, &motor->position, &motor->direction);
+  printf("Encoder position: %lu\r\n", motor->position);
+  printf("Encoder direction: %lu\r\n", motor->direction);
+  encoder_to_degrees(motor->position);
+  printf("Encoder position in degrees: %f\r\n", encoder_to_degrees(motor->position));
   lsm6ds3_init();
 
   /* Welcome message */
