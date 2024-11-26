@@ -180,6 +180,7 @@ int main(void)
   motor_data* motor=&motordata;
   MotorState motorState;
   MotorState* motorS=&motorState;
+  motorS->target = 0;
   encoder_start(&encoder);
   encoder_read(&encoder, &motor->position, &motor->direction);
   //printf("Encoder position: %lu\r\n", motor->position);
@@ -207,10 +208,11 @@ int main(void)
       Error_Handler();
     }
 
-
-    encoder_read(&encoder, &motorS->position, &motorS->direction);
-    encoder_to_degrees(motorS->position);
-    StabilizeMotor(&motorS, &pid, &pwmOutput1_ptr, &pwmOutput2_ptr);
+    lsm6ds3_read_accelerometer(&data);
+    motorS->tilt = lsm6ds3_g_to_degrees(data->x);
+    encoder_read(&encoder, &motor->position, &motor->direction);
+    motorS->position = encoder_to_degrees(motor->position);
+    StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
     pwm_update(&PWM1, pwmOutput1);
     pwm_update(&PWM2, pwmOutput2);
     // Turn IN1_motor on
@@ -223,13 +225,14 @@ int main(void)
     //printf("Button: %u\r\n", gpio_if_get(&user_button));
 
     /* Read LSM6DS3 driver */
-    if (lsm6ds3_update())
+    /*if (lsm6ds3_update())
     {
       printf( "LSM6DS3 updated\r\n" );
     }
     lsm6ds3_read_accelerometer(&data);
     //printf("Accelerometer:\n x: %G\n y: %G\n z: %G\r\n", data->x, data->y, data->z);
     printf("%G\t%G\t%G\r\n", data->x, data->y, data->z);
+    */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

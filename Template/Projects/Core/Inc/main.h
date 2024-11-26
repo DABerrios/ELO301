@@ -95,10 +95,10 @@ typedef struct {
   } motor_data;
 typedef struct
   {
-	uint32_t tilt;     //Current tilt angle from accelerometer
-	uint32_t position; //current position from encoder
-	uint32_t target;   //target position
-	uint32_t direction; //direction of motor
+	real_t tilt;     //Current tilt angle from accelerometer
+	real_t position; //current position from encoder
+	real_t target;   //target position
+	real_t direction; //direction of motor
   }MotorState;
 /* USER CODE END Private defines */
 

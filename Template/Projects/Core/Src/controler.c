@@ -53,9 +53,9 @@
 /*- PUBLIC_API ---------------------------------------------------------------*/
 
 
- uint32_t UpdatePID(SPid * pid, uint32_t error, uint32_t position)
+ real_t UpdatePID(SPid * pid, real_t error, real_t position)
 {
-  uint32_t pTerm, dTerm, iTerm;
+  real_t pTerm, dTerm, iTerm;
   pTerm = pid->propGain * error; // calculate the proportional term
   // calculate the integral state with appropriate limiting
   pid->integratState += error;
@@ -78,14 +78,14 @@
 }
 void StabilizeMotor(MotorState *state, SPid *pid, uint8_t *pwmOutput1, uint8_t *pwmOutput2)
 {
-	uint32_t tiltError = state->tilt;
-	uint32_t posError = state->target - state->position;
+	real_t tiltError = state->tilt;
+	real_t posError = state->target - state->position;
 
-	uint32_t totalError = tiltError + posError;
+	real_t totalError = tiltError + posError;
 
-	uint32_t controlSignal = UpdatePID(pid, totalError, state->position);
+	real_t controlSignal = UpdatePID(pid, totalError, state->position);
 
-	uint32_t scaledSignal = fabs(controlSignal);
+	real_t scaledSignal = fabs(controlSignal);
   if (scaledSignal > 100) {
     scaledSignal = 100;
   }
@@ -94,9 +94,11 @@ void StabilizeMotor(MotorState *state, SPid *pid, uint8_t *pwmOutput1, uint8_t *
   if (controlSignal > 0) {
     *pwmOutput1 = pwmSignal;
     *pwmOutput2 = 0;
+    state->direction = 1;
   } else {
     *pwmOutput1 = 0;
     *pwmOutput2 = -pwmSignal;
+    state->direction = 0;
   }
 
 
