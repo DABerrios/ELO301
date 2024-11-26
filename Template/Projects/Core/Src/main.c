@@ -95,6 +95,8 @@ int main(void)
   t_encoder encoder;
   uint8_t pwmOutput1 = 0;
   uint8_t pwmOutput2 = 0;
+  uint8_t* pwmOutput1_ptr = &pwmOutput1;
+  uint8_t* pwmOutput2_ptr = &pwmOutput2;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -147,7 +149,7 @@ int main(void)
   {
     Error_Handler();
   }
-  MotorState motorState = {0};
+
   SPid pid = {
       .derState = 0,
       .integratState = 0,
@@ -176,6 +178,8 @@ int main(void)
 
   motor_data motordata;
   motor_data* motor=&motordata;
+  MotorState motorState;
+  MotorState* motorS=&motorState;
   encoder_start(&encoder);
   encoder_read(&encoder, &motor->position, &motor->direction);
   //printf("Encoder position: %lu\r\n", motor->position);
@@ -204,11 +208,11 @@ int main(void)
     }
 
 
-    encoder_read(&encoder, &motorState->position, &motorState->direction);
-    encoder_to_degrees(motorState->position);
-    StabilizeMotor(&motorState, &pid, &pwmOutput1, &pwmOutput2, &motorState->direction);
-    pwm_update(&PWM1, &pwmOutput1);
-    pwm_update(&PWM2, &pwmOutput2);
+    encoder_read(&encoder, &motorS->position, &motorS->direction);
+    encoder_to_degrees(motorS->position);
+    StabilizeMotor(&motorS, &pid, &pwmOutput1_ptr, &pwmOutput2_ptr);
+    pwm_update(&PWM1, pwmOutput1);
+    pwm_update(&PWM2, pwmOutput2);
     // Turn IN1_motor on
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);

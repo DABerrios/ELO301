@@ -72,13 +72,13 @@ t_encoder_status encoder_start(t_encoder *encoder) {
 
 	return ENCODER_SUCCESS;
 }
-t_encoder_status encoder_read(t_encoder *encoder, real_t *value, real_t *direction)
+t_encoder_status encoder_read(t_encoder *encoder, uint32_t *value, uint32_t *direction)
 {
   *value = encoder->tim->Instance->CNT;
   *direction = encoder->tim->Instance->CR1;
   return ENCODER_SUCCESS;
 }
-float encoder_to_degrees(real_t value)
+float encoder_to_degrees(uint32_t value)
  {
   float degrees = (value * 360 / ENCODER_PULSES_PER_REVOLUTION)%360;
   return degrees;

@@ -54,11 +54,11 @@ extern "C" {
 
 typedef struct
 {
-  real_t derState;      // Last position input
-  real_t integratState; // Integrator state
-  real_t integratMax,    // Maximum and minimum
+  uint32_t derState;      // Last position input
+  uint32_t integratState; // Integrator state
+  uint32_t integratMax,    // Maximum and minimum
   integratMin;          // allowable integrator state
-  real_t integratGain, // integral gain
+  uint32_t integratGain, // integral gain
   propGain,            // proportional gain
   derGain;             // derivative gain
 } SPid;
@@ -66,7 +66,7 @@ typedef struct
 
 /*- PUBLIC_API ---------------------------------------------------------------*/
 void StabilizeMotor(MotorState *state, SPid *pid, uint8_t *pwmOutput1, uint8_t *pwmOutput2);
-real_t UpdatePID(SPid * pid, real_t error, real_t position);
+uint32_t UpdatePID(SPid * pid, uint32_t error, uint32_t position);
 
 #ifdef __cplusplus
 }
