@@ -35,6 +35,7 @@
 #include "pwm.h"
 #include "lsm6ds3.h"
 #include "encoder.h"
+#include "controler.h"
 
 /* USER CODE END Includes */
 
@@ -92,7 +93,8 @@ int main(void)
   t_pwm PWM2;
   uint8_t adc_rate;
   t_encoder encoder;
-
+  uint8_t pwmOutput1 = 0;
+  uint8_t pwmOutput2 = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -145,7 +147,16 @@ int main(void)
   {
     Error_Handler();
   }
-
+  MotorState motorState = {0};
+  SPid pid = {
+      .derState = 0,
+      .integratState = 0,
+      .integratMax = 100,
+      .integratMin = -100,
+      .integratGain = 0.1,
+      .propGain = 2.0,
+      .derGain = 0.05
+  };
   /* Init PWM */
   pwm_init(&PWM1, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
   if (pwm_open(&PWM1) != PWM_SUCCESS)
@@ -167,14 +178,14 @@ int main(void)
   motor_data* motor=&motordata;
   encoder_start(&encoder);
   encoder_read(&encoder, &motor->position, &motor->direction);
-  printf("Encoder position: %lu\r\n", motor->position);
-  printf("Encoder direction: %lu\r\n", motor->direction);
+  //printf("Encoder position: %lu\r\n", motor->position);
+  //printf("Encoder direction: %lu\r\n", motor->direction);
   encoder_to_degrees(motor->position);
-  printf("Encoder position in degrees: %f\r\n", encoder_to_degrees(motor->position));
+  //printf("Encoder position in degrees: %f\r\n", encoder_to_degrees(motor->position));
   lsm6ds3_init();
 
   /* Welcome message */
-  printf("ELO301 Demo Init\r\n");
+  //printf("ELO301 Demo Init\r\n");
   lsm6ds3_accelerometer_mode();
   accel_data acceldata;
   accel_data* data=&acceldata;
@@ -191,12 +202,13 @@ int main(void)
     {
       Error_Handler();
     }
-    pwm_update(&PWM1, 0);
-    pwm_update(&PWM2, 20);
 
-    encoder_read(&encoder, &motor->position, &motor->direction);
-    encoder_to_degrees(motor->position);
 
+    encoder_read(&encoder, &motorState->position, &motorState->direction);
+    encoder_to_degrees(motorState->position);
+    StabilizeMotor(&motorState, &pid, &pwmOutput1, &pwmOutput2, &motorState->direction);
+    pwm_update(&PWM1, &pwmOutput1);
+    pwm_update(&PWM2, &pwmOutput2);
     // Turn IN1_motor on
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);

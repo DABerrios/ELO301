@@ -81,6 +81,8 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+typedef double real_t;
+
 typedef struct {
 	float x;
 	float y;
@@ -91,6 +93,13 @@ typedef struct {
   uint32_t position;
   uint32_t direction;
   } motor_data;
+typedef struct
+  {
+    real_t tilt;     //Current tilt angle from accelerometer
+    real_t position; //current position from encoder
+    real_t target;   //target position
+    real_t direction; //direction of motor
+  }MotorState;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
