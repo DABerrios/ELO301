@@ -37,6 +37,9 @@
 #include "encoder.h"
 #include "controler.h"
 
+  MotorState motorState;
+  motor_data motordata;
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -155,9 +158,9 @@ int main(void)
       .integratState = 0,
       .integratMax = 100,
       .integratMin = -100,
-      .integratGain = 0.1,
-      .propGain = 2.0,
-      .derGain = 0.05
+      .integratGain = 0.01,
+      .propGain = 0.3,
+      .derGain = 0.1
   };
   /* Init PWM */
   pwm_init(&PWM1, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
@@ -176,9 +179,9 @@ int main(void)
     Error_Handler();
   }
 
-  motor_data motordata;
+  //motor_data motordata;
   motor_data* motor=&motordata;
-  MotorState motorState;
+  //MotorState motorState;
   MotorState* motorS=&motorState;
   motorS->target = 0;
   encoder_start(&encoder);
@@ -213,8 +216,8 @@ int main(void)
     encoder_read(&encoder, &motor->position, &motor->direction);
     motorS->position = encoder_to_degrees(motor->position);
     StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
-    pwm_update(&PWM1, pwmOutput1);
-    pwm_update(&PWM2, pwmOutput2);
+    pwm_update(&PWM1, pwmOutput1/5);
+    pwm_update(&PWM2, pwmOutput2/5);
     // Turn IN1_motor on
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);

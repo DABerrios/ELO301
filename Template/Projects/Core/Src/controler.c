@@ -78,7 +78,7 @@
 }
 void StabilizeMotor(MotorState *state, SPid *pid, uint8_t *pwmOutput1, uint8_t *pwmOutput2)
 {
-	real_t tiltError = state->tilt;
+	real_t tiltError = 0.0-state->tilt;
 	real_t posError = state->target - state->position;
 
 	real_t totalError = tiltError + posError;
@@ -97,10 +97,11 @@ void StabilizeMotor(MotorState *state, SPid *pid, uint8_t *pwmOutput1, uint8_t *
     state->direction = 1;
   } else {
     *pwmOutput1 = 0;
-    *pwmOutput2 = -pwmSignal;
+    *pwmOutput2 = pwmSignal;
     state->direction = 0;
   }
 
 
 }
+
 
