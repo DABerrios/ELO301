@@ -186,8 +186,8 @@ void lsm6ds3_read_accelerometer(accel_data **data) {
 	    return;
 	}
 }
-float lsm6ds3_g_to_degrees(float g) {
-	float degrees = asin(g) * 180 / 3.14159265359;
+float lsm6ds3_g_to_degrees(float gx, float gy, float gz) {
+	float degrees = atan2(gy , sqrt(pow(gx,2)+pow(gz,2))) * 180 / 3.14159265359;
 	return degrees;
 }
 /*

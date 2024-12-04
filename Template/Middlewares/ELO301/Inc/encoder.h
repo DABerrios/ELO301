@@ -67,8 +67,7 @@ t_encoder_status encoder_open(t_encoder *encoder);
 t_encoder_status encoder_read(t_encoder *encoder, uint32_t *value, uint32_t *direction);
 float encoder_to_degrees(uint32_t value);
 t_encoder_status encoder_start(t_encoder *encoder);
-float lsm6ds3_g_to_degrees(float g);
-
+float lsm6ds3_g_to_degrees(float gx, float gy, float gz);
 
 
 #endif /* ELO301_INC_ENCODER_H_ */

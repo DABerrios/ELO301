@@ -39,6 +39,7 @@
 
   MotorState motorState;
   motor_data motordata;
+  MotorState* motorS;
 
 /* USER CODE END Includes */
 
@@ -158,9 +159,9 @@ int main(void)
       .integratState = 0,
       .integratMax = 100,
       .integratMin = -100,
-      .integratGain = 0,
-      .propGain = 0.1,
-      .derGain = 0
+      .integratGain = 0.01,
+      .propGain = 0.25,
+      .derGain = 0.001
   };
   /* Init PWM */
   pwm_init(&PWM1, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
@@ -182,9 +183,10 @@ int main(void)
   //motor_data motordata;
   motor_data* motor=&motordata;
   //MotorState motorState;
-  MotorState* motorS=&motorState;
+  motorS=&motorState;
   motorS->target = 0;
   encoder_start(&encoder);
+  __HAL_TIM_SET_COUNTER(&htim1, 32000);
   encoder_read(&encoder, &motor->position, &motor->direction);
   //printf("Encoder position: %lu\r\n", motor->position);
   //printf("Encoder direction: %lu\r\n", motor->direction);
@@ -212,10 +214,10 @@ int main(void)
     }
 
     lsm6ds3_read_accelerometer(&data);
-    motorS->tilt = lsm6ds3_g_to_degrees(data->x);
+    motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
     encoder_read(&encoder, &motor->position, &motor->direction);
     motorS->position = encoder_to_degrees(motor->position);
-    motorS->target = motorS->tilt + 360.0;
+    motorS->target = -motorS->tilt + 180.0 + adc_rate*180;
 
     StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
     pwm_update(&PWM1, pwmOutput1);

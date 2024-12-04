@@ -82,8 +82,8 @@ float encoder_to_degrees(uint32_t value)
  {
   float revolutions = (float)value;
   revolutions = revolutions/(float)(ENCODER_GEAR_RATIO*ENCODER_PULSES_PER_REVOLUTION);
-  //float degrees = fmod(revolutions * 360.0, 360.0);
-  float degrees = revolutions * 360.0;
+  float degrees = fmod(revolutions *360.0, 360.0);
+  //float degrees = revolutions * 360.0;
 
   return degrees;
   }
