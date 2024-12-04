@@ -80,7 +80,11 @@ t_encoder_status encoder_read(t_encoder *encoder, uint32_t *value, uint32_t *dir
 }
 float encoder_to_degrees(uint32_t value)
  {
-  float degrees = (value * 360 / ENCODER_PULSES_PER_REVOLUTION)%360;
+  float revolutions = (float)value;
+  revolutions = revolutions/(float)(ENCODER_GEAR_RATIO*ENCODER_PULSES_PER_REVOLUTION);
+  //float degrees = fmod(revolutions * 360.0, 360.0);
+  float degrees = revolutions * 360.0;
+
   return degrees;
   }
 

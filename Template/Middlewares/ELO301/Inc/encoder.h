@@ -46,6 +46,7 @@ extern "C" {
 
 /*- PRIVATE_Definitions ------------------------------------------------------*/
 #define ENCODER_PULSES_PER_REVOLUTION 28
+#define ENCODER_GEAR_RATIO 50
 
 /*- PRIVATE_Types ------------------------------------------------------------*/
 typedef struct {
