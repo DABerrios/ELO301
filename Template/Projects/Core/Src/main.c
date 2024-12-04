@@ -217,7 +217,7 @@ int main(void)
     motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
     encoder_read(&encoder, &motor->position, &motor->direction);
     motorS->position = encoder_to_degrees(motor->position);
-    motorS->target = -motorS->tilt + 180.0 + adc_rate*180;
+    motorS->target = -motorS->tilt + 180.0 + adc_rate*2;
 
     StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
     pwm_update(&PWM1, pwmOutput1);
