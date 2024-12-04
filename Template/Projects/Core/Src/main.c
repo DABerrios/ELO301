@@ -171,10 +171,10 @@ int main(void)
   }
 
   pwm_init(&PWM2, &htim2, TIM_CHANNEL_2, COUNTER_PERIOD_VALUE);
-	if (pwm_open(&PWM2) != PWM_SUCCESS)
-	{
-	  Error_Handler();
-	}
+  if (pwm_open(&PWM2) != PWM_SUCCESS)
+  {
+    Error_Handler();
+  }
   encoder_init(&encoder, &htim1, TIM_CHANNEL_ALL, COUNTER_PERIOD_VALUE);
   if (encoder_open(&encoder) != ENCODER_SUCCESS) {
     Error_Handler();
@@ -194,6 +194,8 @@ int main(void)
   //printf("Encoder position in degrees: %f\r\n", encoder_to_degrees(motor->position));
   lsm6ds3_init();
 
+  int state = 0;
+
   /* Welcome message */
   //printf("ELO301 Demo Init\r\n");
   lsm6ds3_accelerometer_mode();
@@ -201,6 +203,7 @@ int main(void)
   accel_data* data=&acceldata;
   lsm6ds3_read_accelerometer(&data);
 
+  int button_pressed = 0;
 
   while (1)
   {
@@ -213,13 +216,29 @@ int main(void)
       Error_Handler();
     }
 
-    lsm6ds3_read_accelerometer(&data);
-    motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
-    encoder_read(&encoder, &motor->position, &motor->direction);
-    motorS->position = encoder_to_degrees(motor->position);
-    motorS->target = -motorS->tilt + 180.0 + adc_rate*2;
+    if (gpio_if_get(&user_button) == GPIO_PIN_SET) {
+      if (!button_pressed) {
+        state = !state;
+        button_pressed = 1;
+      }
+    } else {
+      button_pressed = 0;
+    }
 
-    StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
+    if (state == 0) {
+      lsm6ds3_read_accelerometer(&data);
+      motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
+      encoder_read(&encoder, &motor->position, &motor->direction);
+      motorS->position = encoder_to_degrees(motor->position);
+      uint32_t scale = 2*adc_rate;
+      motorS->target = -motorS->tilt + 180.0 + scale;
+      StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
+    } else {
+      pwmOutput1 = adc_rate;
+      pwmOutput2 = 0.0;
+    }
+
+
     pwm_update(&PWM1, pwmOutput1);
     pwm_update(&PWM2, pwmOutput2);
     // Turn IN1_motor on
