@@ -159,7 +159,7 @@ int main(void)
   pid.integratMax = 100,
   pid.integratMin = -100,
   pid.integratGain = 0.01,
-  pid.propGain = 0.25,
+  pid.propGain = 0.5,
   pid.derGain = 0.001;
   
   /* Init PWM */
@@ -188,6 +188,10 @@ int main(void)
   //MotorState motorState;
   motorS=&motorState;
   motorS->target = 0;
+  motorS->position = 0;
+  motorS->direction = 0;
+  motorS->tilt = 0;
+
   encoder_start(&encoder);
   __HAL_TIM_SET_COUNTER(&htim1, 32000);
   encoder_read(&encoder, &motor->position, &motor->direction);
@@ -233,9 +237,10 @@ int main(void)
       motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
       encoder_read(&encoder, &motor->position, &motor->direction);
       motorS->position = encoder_to_degrees(motor->position);
-      uint32_t scale = 3*adc_rate;
+      uint32_t scale = 2*adc_rate;
       motorS->target = -motorS->tilt + 180.0 + scale;
       StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
+
     } else {
       pwmOutput1 = adc_rate;
       pwmOutput2 = 0.0;
@@ -248,7 +253,7 @@ int main(void)
     HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, GPIO_PIN_RESET);
     
-    HAL_Delay(DELAY_MS);
+    HAL_Delay(DELAY_MS/2);
 
     /* Print message */
     //printf("Button: %u\r\n", gpio_if_get(&user_button));
