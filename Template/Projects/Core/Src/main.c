@@ -37,9 +37,7 @@
 #include "encoder.h"
 #include "controler.h"
 
-  MotorState motorState;
-  motor_data motordata;
-  MotorState* motorS;
+  //MotorState* motorS;
 
 /* USER CODE END Includes */
 
@@ -75,6 +73,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+SPid pid;
 
 /* USER CODE END 0 */
 
@@ -154,15 +154,14 @@ int main(void)
     Error_Handler();
   }
 
-  SPid pid = {
-      .derState = 0,
-      .integratState = 0,
-      .integratMax = 100,
-      .integratMin = -100,
-      .integratGain = 0.01,
-      .propGain = 0.25,
-      .derGain = 0.001
-  };
+  pid.derState = 0,
+  pid.integratState = 0,
+  pid.integratMax = 100,
+  pid.integratMin = -100,
+  pid.integratGain = 0.01,
+  pid.propGain = 0.25,
+  pid.derGain = 0.001;
+  
   /* Init PWM */
   pwm_init(&PWM1, &htim2, TIM_CHANNEL_1, COUNTER_PERIOD_VALUE);
   if (pwm_open(&PWM1) != PWM_SUCCESS)
@@ -181,7 +180,11 @@ int main(void)
   }
 
   //motor_data motordata;
+  MotorState motorState;
+   motor_data motordata;
   motor_data* motor=&motordata;
+  MotorState* motorS;
+
   //MotorState motorState;
   motorS=&motorState;
   motorS->target = 0;
@@ -230,7 +233,7 @@ int main(void)
       motorS->tilt = lsm6ds3_g_to_degrees(data->x, data->y, data->z);
       encoder_read(&encoder, &motor->position, &motor->direction);
       motorS->position = encoder_to_degrees(motor->position);
-      uint32_t scale = 2*adc_rate;
+      uint32_t scale = 3*adc_rate;
       motorS->target = -motorS->tilt + 180.0 + scale;
       StabilizeMotor(motorS, &pid, pwmOutput1_ptr, pwmOutput2_ptr);
     } else {
